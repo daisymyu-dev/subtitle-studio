@@ -33,6 +33,9 @@ jobs:
       - name: Source regressions
         shell: pwsh
         run: |
+          New-Item -ItemType Directory -Force -Path .work/tmp | Out-Null
+          $env:TEMP = $env:TMP = (Resolve-Path .work/tmp).Path
+          $env:PYTHONUTF8 = '1'
           .build/venv/Scripts/python.exe -m unittest discover -s tests -v
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           node --test tests/*.js

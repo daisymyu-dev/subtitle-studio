@@ -13,7 +13,9 @@ except ImportError:
 
 class SentenceStudyTests(unittest.TestCase):
     def setUp(self):
-        self.temp=tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[1]/'.work/tmp')
+        work=Path(__file__).resolve().parents[1]/'.work/tmp'
+        work.mkdir(parents=True,exist_ok=True)
+        self.temp=tempfile.TemporaryDirectory(dir=work)
         self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name);self.id='a'*32
         self.job=self.root/'results'/self.id;self.job.mkdir(parents=True)

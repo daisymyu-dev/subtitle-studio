@@ -43,6 +43,9 @@ try {
     }
     New-Item -ItemType Directory -Force -Path (Join-Path $root '.build\tmp') | Out-Null
     $env:TEMP = $env:TMP = Join-Path $root '.build\tmp'
+    $env:HF_HOME = Join-Path $root '.build\cache\huggingface'
+    $env:HF_HUB_CACHE = Join-Path $env:HF_HOME 'hub'
+    $env:HF_XET_CACHE = Join-Path $env:HF_HOME 'xet'
     & $Python -c "import struct,sys; assert sys.platform == 'win32' and struct.calcsize('P') == 8; assert sys.version_info[:2] == (3,12)"
     if ($LASTEXITCODE -ne 0) { throw 'Use 64-bit Python 3.12 on Windows.' }
     if ($InstallDependencies) {
@@ -92,6 +95,8 @@ try {
         & $Python scripts\verify-bundle.py $output
         if ($LASTEXITCODE -ne 0) { throw 'Core bundle integrity verification failed.' }
     }
+    & $Python scripts\verify-source-snapshot.py $output --assets --report (Join-Path $output 'SOURCE-SNAPSHOT.json')
+    if ($LASTEXITCODE -ne 0) { throw 'Source changed during the build; rebuild before release.' }
     Write-Host "Built dist/$bundle. Keep the EXE and _internal folder together."
 } finally {
     Remove-Item Env:SUBTITLE_STUDIO_BUILD_NODE -ErrorAction SilentlyContinue

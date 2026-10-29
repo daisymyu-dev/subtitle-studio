@@ -87,7 +87,11 @@ def main():
                     raise AssertionError('EXE exited before startup: ' + process.stderr.read().decode(errors='replace'))
                 try:
                     with request('/health', authenticated=False) as response:
-                        assert json.load(response)['app'] == 'youtube-subtitle-studio'
+                        health = json.load(response)
+                        assert health['app'] == 'youtube-subtitle-studio'
+                        assert health['version'] == '0.1.0-beta.1'
+                        assert health['capabilities']['asr'] == args.expect_asr
+                        assert health['capabilities']['original_audio'] == args.expect_asr
                     break
                 except (URLError, TimeoutError, ConnectionError):
                     if time.monotonic() > deadline:
@@ -131,9 +135,17 @@ def main():
             retained = data / 'results' / job
             assert retained.is_dir()
             assert any('This example is written' in path.read_text('utf-8') for path in retained.glob('*.txt'))
+            if not args.expect_asr:
+                try:
+                    with request('/api/jobs/' + job + '/audio', {}):
+                        raise AssertionError('Core must reject unavailable audio before queuing work')
+                except HTTPError as error:
+                    assert error.code == 409 and json.load(error)['code'] == 'dependency'
             print(json.dumps({'runtime': runtime, 'http': 'passed', 'caption_import': 'passed',
                               'learning_history': 'passed', 'token_origin_bridge_guards': 'passed',
-                              'data_isolation': 'passed', 'port': args.port}))
+                              'data_isolation': 'passed', 'core_capabilities': 'passed',
+                              'unavailable_audio_preflight': 'passed' if not args.expect_asr else 'not applicable',
+                              'port': args.port}))
         finally:
             if process.poll() is None and token:
                 try:
