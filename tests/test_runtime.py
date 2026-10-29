@@ -29,7 +29,7 @@ class RuntimeTests(unittest.TestCase):
     def test_frozen_assets_use_meipass_and_data_use_localappdata(self):
         runtime = self.runtime()
         with tempfile.TemporaryDirectory() as directory:
-            base = Path(directory)
+            base = Path(directory).resolve()
             with patch.object(sys, 'frozen', True, create=True), \
                     patch.object(sys, '_MEIPASS', str(base / 'installed' / '_internal'), create=True), \
                     patch.object(sys, 'executable', str(base / 'installed' / 'SubtitleStudio.exe')), \
@@ -57,20 +57,20 @@ class RuntimeTests(unittest.TestCase):
 
     def test_prepare_runtime_keeps_temp_and_model_caches_inside_data_root(self):
         runtime = self.runtime()
-        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {}, clear=True):
-            root = Path(directory) / 'data'
+        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {}, clear=True), \
+                patch.object(tempfile, 'tempdir', tempfile.tempdir):
+            root = Path(directory).resolve() / 'data'
             runtime.prepare_data(root)
             for variable in ('TEMP', 'TMP', 'HF_HOME', 'HF_HUB_CACHE', 'XDG_CACHE_HOME'):
                 self.assertTrue(Path(os.environ[variable]).resolve().is_relative_to(root))
             self.assertEqual(Path(tempfile.gettempdir()), root / '.work' / 'tmp')
-            tempfile.tempdir = None
 
 
 class NativeRuntimeTests(unittest.TestCase):
     def test_frozen_command_uses_internal_entry_and_only_bundled_node(self):
         from studio.service import NativeTools
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             node = root / 'runtime' / 'node.exe'
             node.parent.mkdir()
             node.touch()

@@ -36,7 +36,12 @@ jobs:
         run: python scripts/check-release.py
       - name: Python regressions
         shell: pwsh
-        run: python -m unittest discover -s tests -q
+        run: |
+          New-Item -ItemType Directory -Force -Path .work/tmp | Out-Null
+          $env:TEMP = (Resolve-Path .work/tmp).Path
+          $env:TMP = $env:TEMP
+          $env:PYTHONIOENCODING = 'utf-8'
+          python -m unittest discover -s tests -q
       - name: JavaScript regressions
         shell: pwsh
         run: node --test tests/*.js
