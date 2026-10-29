@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools==84.2.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "subtitle-studio"
+version = "0.1.0b1"
+description = "Loopback-only subtitle learning and local Word export"
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+dependencies = ["yt-dlp[default]==2026.10.26", "python-docx==1.2.0", "onnxruntime==1.31.1", "tokenizers==0.23.3", "huggingface-hub==2.3.0"]
+
+[project.optional-dependencies]
+asr = ["faster-whisper==1.2.1", "av==18.1.0", "ctranslate2==4.8.4"]
+build = ["pyinstaller==6.22.3"]
+
+[tool.setuptools]
+packages = ["studio"]
+
+# Windows distribution is built from this checkout with scripts/SubtitleStudio.spec,
+# not from a pip-installed wheel (the browser assets live beside the source).

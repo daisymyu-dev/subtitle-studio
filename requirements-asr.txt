@@ -1,0 +1,5 @@
+# Optional CPU-only source recognition; not included in the Windows Core build.
+faster-whisper==1.2.1
+# av.open(metadata_errors=...) is still used by faster-whisper; do not use PyAV 19.
+av==18.1.0
+ctranslate2==4.8.4

@@ -1,0 +1,24 @@
+name: Bug report / 问题反馈
+description: Report a reproducible problem without personal files or credentials.
+body:
+  - type: markdown
+    attributes:
+      value: "Do not upload Cookies, tokens, private transcripts, learning databases, or full diagnostic logs. Security issues: see SECURITY.md."
+  - type: input
+    id: version
+    attributes:
+      label: Version and installation type
+      placeholder: 0.1.0-beta.1, Windows portable
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps and expected/actual result
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: OS / browser / safe error message
+      description: Remove user paths and personal content before sharing.

@@ -1,0 +1,4 @@
+# Core captions, punctuation and local Word. Optional ASR: requirements-asr.txt.
+yt-dlp[default]==2026.10.26
+python-docx==1.2.0
+-r requirements-punctuation.txt

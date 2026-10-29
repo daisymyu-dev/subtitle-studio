@@ -1,0 +1,13 @@
+name: Feature request / 功能建议
+description: Describe the learning problem and desired outcome.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What learning problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What would a useful result look like?
